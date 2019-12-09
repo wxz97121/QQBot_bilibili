@@ -4,4 +4,5 @@ Bilibili -> QQ Bot
 + 我并不会写Python，也不会写代码，所以东西都是瞎写的，大概算是实现了效果。
 + 具体用法参见 [Nonebot] 
 + 目前可以做到：实时转发B站动态、实时提醒开播消息。
+
 [NoneBot]: https://github.com/richardchien/nonebot
