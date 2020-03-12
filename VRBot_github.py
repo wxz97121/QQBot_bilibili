@@ -61,6 +61,9 @@ def GetDynamicStatus(uid, VRindex):
     nowtime = time.time().__int__()
     # card是字符串，需要重新解析
     while last_dynamic_str != cards_data[index]['desc']['dynamic_id_str']:
+        #这条是105 秒前发的。
+        if nowtime-cards_data[index]['desc']['timestamp'] > 105:
+            break
         try:
             if (cards_data[index]['desc']['type'] == 64):
                 content_list.append(VR_name_list[VRindex] +'发了新专栏「'+ cards_data[index]['card']['title'] + '」并说： ' +cards_data[index]['card']['dynamic'])
@@ -93,9 +96,6 @@ def GetDynamicStatus(uid, VRindex):
 #        print(len(cards_data))
 #        print(index)
         if len(cards_data) == index:
-            break
-        #这条是105 秒前发的。
-        if nowtime-cards_data[index]['desc']['timestamp'] > 105:
             break
         cards_data[index]['card'] = json.loads(cards_data[index]['card'])
     f = open(str(uid)+'Dynamic','w')
