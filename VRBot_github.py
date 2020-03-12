@@ -10,11 +10,12 @@ import requests
 import json
 import time
 
-#TODO：转载本人发的动态的图片。
 
-VR_uid_list=[455916618]
-VR_group_list=[155284163]
-VR_name_list=['无理']
+VR_uid_list=[61639371]
+VR_group_list=[
+   [950253287,849437495]
+    ]
+VR_name_list=['轴伊']
 
 
 @nonebot.scheduler.scheduled_job('interval',minutes=1)
@@ -25,21 +26,16 @@ async def _():
         dynamic_content = GetDynamicStatus(VR_uid_list[i], i)
         for content in dynamic_content:
             try:
-                res = await bot.send_group_msg(group_id=VR_group_list[i], message=content)
+                for groupnum in VR_group_list[i]:
+                    res = await bot.send_group_msg(group_id=groupnum, message=content)
             except CQHttpError as e:
                 pass
 
         live_status = GetLiveStatus(VR_uid_list[i])
         if live_status != '':
-            await bot.send_group_msg(group_id=VR_group_list[i], message=VR_name_list[i] +' 开播啦啦啦！！！ ' + live_status)
+            for groupnum in VR_group_list[i]:
+                await bot.send_group_msg(group_id=groupnum, message=VR_name_list[i] +' 开播啦啦啦！！！ ' + live_status)
 
-@nonebot.scheduler.scheduled_job('cron', hour = '14', minute='15')
-async def __():
-    bot = nonebot.get_bot()
-    try:
-        await bot.send_private_msg(user_id=604583622,message='两点十五啦！')
-    except CQHttpError:
-        pass
 
 
 def GetDynamicStatus(uid, VRindex):
@@ -52,6 +48,7 @@ def GetDynamicStatus(uid, VRindex):
     try:
         with open(str(uid)+'Dynamic','r') as f:
             last_dynamic_str = f.read()
+            f.close()
     except Exception as err:
         last_dynamic_str=''
         pass
@@ -80,6 +77,8 @@ def GetDynamicStatus(uid, VRindex):
                             content_list.append('[CQ:image,file='+pic_info['img_src']+']')
                     else:
                         #这个表示转发，原动态的信息在 cards-item-origin里面。里面又是一个超级长的字符串……
+                        #origin = json.loads(cards_data[index]['card']['item']['origin'],encoding='gb2312') 我也不知道这能不能解析，没试过
+                        #origin_name = 'Fuck'
                         if 'origin_user' in cards_data[index]['card']:
                             origin_name = cards_data[index]['card']['origin_user']['info']['uname']
                             content_list.append(VR_name_list[VRindex]+ '转发了「'+ origin_name + '」的动态并说： ' +cards_data[index]['card']['item']['content'])
@@ -95,7 +94,7 @@ def GetDynamicStatus(uid, VRindex):
 #        print(index)
         if len(cards_data) == index:
             break
-        #这条是105 秒前发的。不管了！
+        #这条是105 秒前发的。
         if nowtime-cards_data[index]['desc']['timestamp'] > 105:
             break
         cards_data[index]['card'] = json.loads(cards_data[index]['card'])
@@ -112,6 +111,7 @@ def GetLiveStatus(uid):
     try:
         with open(str(uid)+'Live','r') as f:
             last_live_str = f.read()
+            f.close()
     except Exception as err:
             last_live_str = '0'
             pass
