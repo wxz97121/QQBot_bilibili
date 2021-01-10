@@ -288,7 +288,7 @@ def GetLiveStatus(uid):
         now_live_status = str(live_data['live_status'])
         live_title = live_data['title']
     except:
-        now_live_status = 0
+        now_live_status = '0'
         pass
     f = open(str(uid)+'Live','w')
     f.write(now_live_status)
